@@ -72,7 +72,8 @@ MilpInstance* MilpParser::parse(istream& in) {
             milp->addConstr(w, rel, b);
             in >> op;
         } else if (op == "bound:") {
-            double weight, lower = -1e10, upper = 1e10;
+            int weight;
+            int lower = -inf, upper = inf;
             int var;
             bool bound = false;
             while (in >> s) {
@@ -80,7 +81,7 @@ MilpInstance* MilpParser::parse(istream& in) {
                 if (s[0] == 'x') {
                     var = atoi(s.substr(1).c_str());
                     if (bound) lower = weight;
-                    weight = 1.; bound = false;
+                    weight = 0; bound = false;
                 } else if (s == "<=") {
                     continue;
                 } else {

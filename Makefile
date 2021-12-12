@@ -2,10 +2,10 @@ CC = g++
 STD11 = -std=c++11
 CFLAGS = -g
 OPT = -O2
-DEPS = milp.h parser.h
-OBJ = bb.o milp.o parser.o
-INCLUDE = 
-LIBS = 
+DEPS = milp.h parser.h treenode.h lp.h
+OBJ = bb.o milp.o parser.o treenode.o lp.o
+INCLUDE = -I ../gurobi911/linux64/include
+LIBS = -L ../gurobi911/linux64/lib -lgurobi_c++ -lgurobi91
 
 main: bb
 

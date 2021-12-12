@@ -7,12 +7,14 @@ MilpInstance::MilpInstance(int _varCnt) { setVarCnt(_varCnt); }
 MilpInstance::~MilpInstance() {}
 
 void MilpInstance::setVarCnt(int _varCnt) {
-    varCnt = _varCnt;
+    varCnt = _varCnt; intVarCnt = 0;
     cost.resize(varCnt);
     lower.resize(varCnt);
     upper.resize(varCnt);
-    fill(lower.begin(), lower.end(), -1e10);
-    fill(upper.begin(), upper.end(), 1e10);
+    isIntVar.resize(varCnt);
+    fill(lower.begin(), lower.end(), -inf);
+    fill(upper.begin(), upper.end(), inf);
+    fill(isIntVar.begin(), isIntVar.end(), false);
 }
 void MilpInstance::setTarget(vector<pair<int, double>> _cost, bool _minOrMax) {
     minOrMax = _minOrMax;
@@ -23,11 +25,12 @@ void MilpInstance::setTarget(vector<pair<int, double>> _cost, bool _minOrMax) {
 void MilpInstance::addConstr(vector<pair<int, double>> w, int rel, double b) {
     constr.push_back(Constraint(w, rel, b));
 }
-void MilpInstance::setVarBound(int _var, double _lower, double _upper) {
+void MilpInstance::setVarBound(int _var, int _lower, int _upper) {
     lower[_var] = _lower; upper[_var] = _upper;
 }
 void MilpInstance::addIntVar(int _var) {
-    intVar.push_back(_var);
+    intVar.push_back(_var); intVarCnt ++;
+    isIntVar[_var] = true;
 }
 
 ostream& operator <<(ostream& out, const MilpInstance &milp) {
@@ -49,10 +52,10 @@ ostream& operator <<(ostream& out, const MilpInstance &milp) {
         out << constr.b << endl;
     }
     for (int i = 0; i < milp.varCnt; i ++) {
-        if (milp.upper[i] == 1e10 && milp.lower[i] == -1e10) continue;
-        if (milp.lower[i] > -1e10) out << milp.lower[i] << " <= ";
+        if (milp.upper[i] == inf && milp.lower[i] == -inf) continue;
+        if (milp.lower[i] > -inf) out << milp.lower[i] << " <= ";
         out << "x" << i;
-        if (milp.upper[i] < 1e10) out << " <= " << milp.upper[i];
+        if (milp.upper[i] < inf) out << " <= " << milp.upper[i];
         out << endl;
     }
     out << "integer vars: ";

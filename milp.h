@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+const int inf = 1000000000;
+
 const bool MIN = true;
 const bool MAX = false;
 
@@ -22,13 +24,14 @@ public:
 };
 
 class MilpInstance {
-    int varCnt, constrCnt;
+public:
+    int varCnt, constrCnt, intVarCnt;
     bool minOrMax;
     std::vector<double> cost;
     std::vector<Constraint> constr;
-    std::vector<double> lower, upper;
+    std::vector<int> lower, upper;
     std::vector<int> intVar;
-public:
+    std::vector<bool> isIntVar;
     MilpInstance();
     MilpInstance(int varCnt);
     ~MilpInstance();
@@ -36,7 +39,7 @@ public:
     void setVarCnt(int varCnt);
     void setTarget(std::vector<std::pair<int, double>> cost, bool minOrMax = MIN);
     void addConstr(std::vector<std::pair<int, double>> w, int rel = EQ, double b = 0.);
-    void setVarBound(int var, double lower = -1e10, double upper = 1e10);
+    void setVarBound(int var, int lower = -inf, int upper = inf);
     void addIntVar(int var);
     friend std::ostream& operator <<(std::ostream& out, const MilpInstance &milp);
 };
