@@ -4,6 +4,8 @@
 #include <vector>
 
 const int inf = 1000000000;
+const double dinf = 1e10;
+const double eps = 1e-6;
 
 const bool MIN = true;
 const bool MAX = false;
@@ -29,9 +31,9 @@ public:
     bool minOrMax;
     std::vector<double> cost;
     std::vector<Constraint> constr;
-    std::vector<int> lower, upper;
-    std::vector<int> intVar;
-    std::vector<bool> isIntVar;
+    std::vector<int> lower, upper; // lower/upper[i]: the bound of x_{intvar[i]}
+    std::vector<int> intVar; // record all indices of integer variables
+    std::vector<bool> isIntVar; // isIntVar[i]: if x_i is an integer variable
     MilpInstance();
     MilpInstance(int varCnt);
     ~MilpInstance();

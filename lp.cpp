@@ -8,6 +8,7 @@ LPSolver::LPSolver() {
     try {
         env = new GRBEnv(true);
         env->set("LogFile", "lp.log");
+        env->set("LogToConsole", "0");
         env->start();
         model = new GRBModel(*env);
     } catch (GRBException e) {
@@ -47,15 +48,19 @@ void LPSolver::addConstr(const Constraint &constr) {
         model->addConstr(c >= constr.b, "c_" + to_string(constrCnt ++));
 }
 void LPSolver::modifyBound(int id, int lower, int upper) {
-    GRBVar v = model->getVarByName("x_" + to_string(id));
+    GRBVar v = var[id];
     v.set(GRB_DoubleAttr_LB, (double)lower);
     v.set(GRB_DoubleAttr_UB, (double)upper);
 }
 void LPSolver::setObj() {
-    model->setObjective(obj, GRB_MINIMIZE);
+    try {
+        model->setObjective(obj, GRB_MINIMIZE);
+    } catch (GRBException e) {
+        cout << e.getMessage() << endl;
+    }
 }
 void LPSolver::solve() {
-    //model->update();
+    model->update();
     try {
         model->optimize();
     } catch (GRBException e) {
