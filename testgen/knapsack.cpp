@@ -2,8 +2,8 @@
 
 using namespace std;
 
-const int N = 10;
-const int MAXVALUE = 1000, MAXSIZE = 1000;
+const int N = 1000;
+const int MAXVALUE = 100000, MAXSIZE = 100000;
 
 int main(int argc, char **argv) {
     srand(23333);
@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
         vector<int> value, size;
         for (int i = 0; i < N; i ++) {
             value.push_back(rand() % MAXVALUE);
-            size.push_back(rand() % (W / (N / 5)));
+            size.push_back(rand() % (W / (N / (rand() % 5 + 2))));
         }
         out << "target: max ";
         for (int i = 0; i < N; i ++) {

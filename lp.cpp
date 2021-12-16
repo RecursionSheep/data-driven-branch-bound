@@ -60,8 +60,8 @@ void LPSolver::setObj() {
     }
 }
 void LPSolver::solve() {
-    model->update();
     try {
+        model->update();
         model->optimize();
     } catch (GRBException e) {
         cout << e.getMessage() << endl;

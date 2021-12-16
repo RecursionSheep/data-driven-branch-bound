@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cassert>
 
 #include "treenode.h"
 
@@ -69,6 +70,10 @@ bool Node::checkInt() {
 void Node::computeScore(LPSolver *solver) {
     for (int i = 0; i < milp->intVarCnt; i ++) {
         int id = milp->intVar[i];
+        solver->modifyBound(id, lower[i], upper[i]);
+    }
+    for (int i = 0; i < milp->intVarCnt; i ++) {
+        int id = milp->intVar[i];
         score.push_back(vector<double>());
         if (upper[i] == lower[i]) {
             score[i].push_back(0); score[i].push_back(0); score[i].push_back(0);
@@ -79,12 +84,14 @@ void Node::computeScore(LPSolver *solver) {
         int newupper = branchLeftBound(relaxedSol[id], lower[i], upper[i]);
         int newlower = branchRightBound(relaxedSol[id], lower[i], upper[i]);
         solver->modifyBound(id, lower[i], newupper);
+        //cout << lower[i] << ' ' << newupper << endl;
         solver->solve();
         if (solver->isInfeasible())
             leftImprove = dinf;
         else
             leftImprove = solver->getObj() - dualCost;
         solver->modifyBound(id, newlower, upper[i]);
+        //cout << newlower << ' ' << upper[i] << endl;
         solver->solve();
         if (solver->isInfeasible())
             rightImprove = dinf;
@@ -93,6 +100,9 @@ void Node::computeScore(LPSolver *solver) {
         score[i].push_back(min(leftImprove, rightImprove));
         score[i].push_back(max(leftImprove, rightImprove));
         score[i].push_back(fractional(relaxedSol[id]));
+        //cout << score[i][0] << ' ' << score[i][1] << ' ' << score[i][2] << endl;
+        assert(leftImprove >= -eps);
+        assert(rightImprove >= -eps);
         
         solver->modifyBound(id, lower[i], upper[i]);
     }

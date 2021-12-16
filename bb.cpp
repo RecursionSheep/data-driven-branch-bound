@@ -20,9 +20,9 @@ void branch_and_bound(MilpInstance *milp) {
         lpsolver->addConstr(constr);
     //cout << "added constraint" << endl;
     lpsolver->setObj();
-    cout << "set objective" << endl;
+    //cout << "set objective" << endl;
     root->solveRelaxed(lpsolver);
-    cout << "root" << endl;
+    //cout << "root" << endl;
     
     if (root->infeasible) {
         cout << "Infeasible" << endl;
@@ -42,7 +42,7 @@ void branch_and_bound(MilpInstance *milp) {
     while (!Q.empty()) {
         iterCnt ++;
         Node *node = Q.top(); Q.pop();
-        //cout << node->priority << endl;
+        //cout << node->dualCost << endl;
         if (node->checkInt()) {
             if (node->dualCost < bestCost) {
                 bestCost = node->dualCost;
@@ -53,18 +53,22 @@ void branch_and_bound(MilpInstance *milp) {
             continue;
         }
         
-        node->computeScore(lpsolver);
         //node->outputRelaxedSol();
+        node->computeScore(lpsolver);
+        //cout << "score" << endl;
         node->chooseBranchVar();
+        cout << "branch: " << node->branchVar << endl;
         int newupper = Node::branchLeftBound(node->relaxedSol[milp->intVar[node->branchVar]], node->lower[node->branchVar], node->upper[node->branchVar]);
         int newlower = Node::branchRightBound(node->relaxedSol[milp->intVar[node->branchVar]], node->lower[node->branchVar], node->upper[node->branchVar]);
         //cout << node->relaxedSol[milp->intVar[node->branchVar]] << ' ' << newlower << ' ' << newupper << endl;
         for (int i = 0; i < 2; i ++) {
+            //cout << "child " << i << endl;
             Node *child = new Node(node);
             if (i == 0)
                 child->upper[node->branchVar] = newupper;
             else
                 child->lower[node->branchVar] = newlower;
+            //cout << "set new bound" << endl;
             child->solveRelaxed(lpsolver);
             if (child->infeasible || child->dualCost > bestCost) {
                 delete child;
@@ -92,7 +96,7 @@ int main(int argc, char **argv) {
     MilpInstance *milp = parser.parse(in);
     in.close();
     
-    cout << *milp;
+    //cout << *milp;
     branch_and_bound(milp);
     
     return 0;
