@@ -58,6 +58,20 @@ void Node::solveRelaxed(LPSolver *solver) {
         relaxedSol.push_back(solver->getVar(i));
     priority = -dualCost;
 }
+bool Node::rounding(LPSolver *solver) {
+    for (int i = 0; i < milp->intVarCnt; i ++) {
+        int id = milp->intVar[i];
+        int r = round(relaxedSol[id]);
+        solver->modifyBound(id, r, r);
+    }
+    solver->solve();
+    if (solver->isInfeasible() || solver->isUnbounded())
+        return false;
+    roundingCost = solver->getObj();
+    for (int i = 0; i < milp->varCnt; i ++)
+        roundingSol.push_back(solver->getVar(i));
+    return true;
+}
 bool Node::checkInt() {
     for (auto i: milp->intVar) {
         double xi = relaxedSol[i];

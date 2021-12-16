@@ -52,12 +52,19 @@ void branch_and_bound(MilpInstance *milp) {
             delete node;
             continue;
         }
+        if (node->rounding(lpsolver)) {
+            if (node->roundingCost < bestCost) {
+                bestCost = node->roundingCost;
+                for (int i = 0; i < milp->varCnt; i ++)
+                    bestSol[i] = node->roundingSol[i];
+            }
+        }
         
         //node->outputRelaxedSol();
         node->computeScore(lpsolver);
         //cout << "score" << endl;
         node->chooseBranchVar();
-        cout << "branch: " << node->branchVar << endl;
+        //cout << "branch: " << node->branchVar << endl;
         int newupper = Node::branchLeftBound(node->relaxedSol[milp->intVar[node->branchVar]], node->lower[node->branchVar], node->upper[node->branchVar]);
         int newlower = Node::branchRightBound(node->relaxedSol[milp->intVar[node->branchVar]], node->lower[node->branchVar], node->upper[node->branchVar]);
         //cout << node->relaxedSol[milp->intVar[node->branchVar]] << ' ' << newlower << ' ' << newupper << endl;

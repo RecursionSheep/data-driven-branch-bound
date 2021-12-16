@@ -7,8 +7,8 @@ class Node {
 public:
     std::vector<int> upper, lower;
     std::vector<std::vector<double>> score; // score[i][j]: the j-th score of the i-th integer variable
-    std::vector<double> relaxedSol;
-    double dualCost, priority;
+    std::vector<double> relaxedSol, roundingSol;
+    double dualCost, priority, roundingCost;
     bool infeasible, unbounded;
     int branchVar;
     
@@ -22,6 +22,7 @@ public:
     Node(Node *fa);
     ~Node();
     void solveRelaxed(LPSolver *solver);
+    bool rounding(LPSolver *solver);
     bool checkInt();
     void computeScore(LPSolver *solver);
     void outputRelaxedSol();
