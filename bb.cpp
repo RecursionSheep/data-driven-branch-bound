@@ -38,9 +38,11 @@ void branch_and_bound(MilpInstance *milp) {
     
     priority_queue<Node*, vector<Node*>, cmp> Q;
     Q.push(root);
+    int iterCnt = 0;
     while (!Q.empty()) {
+        iterCnt ++;
         Node *node = Q.top(); Q.pop();
-        cout << node->priority << endl;
+        //cout << node->priority << endl;
         if (node->checkInt()) {
             if (node->dualCost < bestCost) {
                 bestCost = node->dualCost;
@@ -52,9 +54,11 @@ void branch_and_bound(MilpInstance *milp) {
         }
         
         node->computeScore(lpsolver);
+        //node->outputRelaxedSol();
         node->chooseBranchVar();
-        int newupper = Node::branchLeftBound(node->relaxedSol[milp->intVar[node->branchVar]]);
-        int newlower = Node::branchRightBound(node->relaxedSol[milp->intVar[node->branchVar]]);
+        int newupper = Node::branchLeftBound(node->relaxedSol[milp->intVar[node->branchVar]], node->lower[node->branchVar], node->upper[node->branchVar]);
+        int newlower = Node::branchRightBound(node->relaxedSol[milp->intVar[node->branchVar]], node->lower[node->branchVar], node->upper[node->branchVar]);
+        //cout << node->relaxedSol[milp->intVar[node->branchVar]] << ' ' << newlower << ' ' << newupper << endl;
         for (int i = 0; i < 2; i ++) {
             Node *child = new Node(node);
             if (i == 0)
@@ -71,6 +75,7 @@ void branch_and_bound(MilpInstance *milp) {
         delete node;
     }
     
+    cout << "Visit " << iterCnt << " nodes" << endl;
     if (bestCost == dinf)
         cout << "Infeasible" << endl;
     else {

@@ -4,13 +4,13 @@
 
 using namespace std;
 
-int Node::branchLeftBound(double x) {
+int Node::branchLeftBound(double x, int lower, int upper) {
+    if (fabs(x - upper) < eps) return upper - 1;
     int b = round(x);
-    if (b < x) return b; else return b - 1;
+    if (b <= x) return b; else return b - 1;
 }
-int Node::branchRightBound(double x) {
-    int b = round(x);
-    if (b > x) return b; else return b + 1;
+int Node::branchRightBound(double x, int lower, int upper) {
+    return branchLeftBound(x, lower, upper) + 1;
 }
 double Node::fractional(double x) {
     int b = round(x);
@@ -76,8 +76,8 @@ void Node::computeScore(LPSolver *solver) {
         }
         
         double leftImprove, rightImprove;
-        int newupper = branchLeftBound(relaxedSol[id]);
-        int newlower = branchRightBound(relaxedSol[id]);
+        int newupper = branchLeftBound(relaxedSol[id], lower[i], upper[i]);
+        int newlower = branchRightBound(relaxedSol[id], lower[i], upper[i]);
         solver->modifyBound(id, lower[i], newupper);
         solver->solve();
         if (solver->isInfeasible())
@@ -96,6 +96,12 @@ void Node::computeScore(LPSolver *solver) {
         
         solver->modifyBound(id, lower[i], upper[i]);
     }
+}
+void Node::outputRelaxedSol() {
+    cout << "Relaxed solution:" << endl;
+    for (auto x: relaxedSol)
+        cout << x << " ";
+    cout << endl;
 }
 void Node::chooseBranchVar() {
     double branchScore = 0;

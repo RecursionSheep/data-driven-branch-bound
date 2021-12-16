@@ -14,8 +14,8 @@ public:
     
     MilpInstance *milp;
     
-    static int branchLeftBound(double x);
-    static int branchRightBound(double x);
+    static int branchLeftBound(double x, int lower, int upper);
+    static int branchRightBound(double x, int lower, int upper);
     static double fractional(double x);
     
     Node(MilpInstance *milp);
@@ -24,6 +24,7 @@ public:
     void solveRelaxed(LPSolver *solver);
     bool checkInt();
     void computeScore(LPSolver *solver);
+    void outputRelaxedSol();
     void chooseBranchVar();
 };
 
