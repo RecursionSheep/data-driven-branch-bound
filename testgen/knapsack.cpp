@@ -2,7 +2,7 @@
 
 using namespace std;
 
-const int N = 1000;
+const int N = 200;
 const int MAXVALUE = 100000, MAXSIZE = 100000;
 
 int main(int argc, char **argv) {
@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
         vector<int> value, size;
         for (int i = 0; i < N; i ++) {
             value.push_back(rand() % MAXVALUE);
-            size.push_back(rand() % (W / (N / (rand() % 5 + 2))));
+            size.push_back(rand() % (W / (N / 4)));
         }
         out << "target: max ";
         for (int i = 0; i < N; i ++) {

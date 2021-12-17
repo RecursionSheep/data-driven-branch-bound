@@ -5,6 +5,7 @@
 
 using namespace std;
 
+double Node::parameter = 0.;
 int Node::branchLeftBound(double x, int lower, int upper) {
     if (fabs(x - upper) < eps) return upper - 1;
     int b = round(x);
@@ -130,9 +131,9 @@ void Node::outputRelaxedSol() {
 void Node::chooseBranchVar() {
     double branchScore = 0;
     for (int i = 0; i < milp->intVarCnt; i ++) {
-        if (score[i][0] + score[i][1] + score[i][2] > branchScore) {
+        if (parameter * score[i][0] + (1 - parameter) * score[i][1] > branchScore) {
             branchVar = i;
-            branchScore = score[i][0] + score[i][1] + score[i][2];
+            branchScore = parameter * score[i][0] + (1 - parameter) * score[i][1];
         }
     }
 }

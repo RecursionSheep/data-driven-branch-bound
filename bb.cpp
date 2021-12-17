@@ -7,8 +7,9 @@
 
 using namespace std;
 
-void branch_and_bound(MilpInstance *milp) {
+void branch_and_bound(MilpInstance *milp, char *logfile, double parameter) {
     Node *root = new Node(milp);
+    root->parameter = parameter;
     LPSolver *lpsolver = new LPSolver();
     //cout << "new solver" << endl;
     lpsolver->init(milp->varCnt);
@@ -41,6 +42,8 @@ void branch_and_bound(MilpInstance *milp) {
     int iterCnt = 0;
     while (!Q.empty()) {
         iterCnt ++;
+        if (iterCnt % 20 == 0)
+            cout << "Visit " << iterCnt << " nodes" << endl;
         Node *node = Q.top(); Q.pop();
         //cout << node->dualCost << endl;
         if (node->checkInt()) {
@@ -86,25 +89,41 @@ void branch_and_bound(MilpInstance *milp) {
         delete node;
     }
     
+    /*for (int i = 0; i < milp->varCnt; i ++)
+        lpsolver->modifyBound(i, milp->lower[i], milp->upper[i]);
+    for (int i = 0; i < milp->intVarCnt; i ++)
+        lpsolver->modifyInt(milp->intVar[i]);
+    lpsolver->solve();
+    cout << "Gurobi sol: " << lpsolver->getObj() << endl;*/
+    
+    ofstream out(logfile);
+    out << "Nodes: " << iterCnt << endl;
+    out.close();
+    
     cout << "Visit " << iterCnt << " nodes" << endl;
     if (bestCost == dinf)
         cout << "Infeasible" << endl;
     else {
         cout << "Target: " << ((milp->minOrMax == MAX) ? -bestCost : bestCost) << endl;
-        for (int i = 0; i < milp->varCnt; i ++)
-            cout << "x" << i << ": " << bestSol[i] << endl;
+        /*for (int i = 0; i < milp->varCnt; i ++)
+            cout << "x" << i << ": " << bestSol[i] << endl;*/
     }
 }
 
 
+// argv[1]: testcase file
+// argv[2]: output log file
+// argv[3]: tuned parameter
 int main(int argc, char **argv) {
     ifstream in(argv[1]);
     MilpParser parser;
     MilpInstance *milp = parser.parse(in);
     in.close();
     
+    double parameter = atof(argv[3]);
     //cout << *milp;
-    branch_and_bound(milp);
+    branch_and_bound(milp, argv[2], parameter);
+    delete milp;
     
     return 0;
 }

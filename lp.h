@@ -18,6 +18,7 @@ public:
     void addVar(int id, double cost, int lower, int upper);
     void addConstr(const Constraint &constr);
     void modifyBound(int id, int lower, int upper);
+    void modifyInt(int id);
     void setObj();
     void solve();
     bool isInfeasible();

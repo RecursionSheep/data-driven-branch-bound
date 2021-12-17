@@ -52,6 +52,10 @@ void LPSolver::modifyBound(int id, int lower, int upper) {
     v.set(GRB_DoubleAttr_LB, (double)lower);
     v.set(GRB_DoubleAttr_UB, (double)upper);
 }
+void LPSolver::modifyInt(int id) {
+    GRBVar v = var[id];
+    v.set(GRB_CharAttr_VType, 'I');
+}
 void LPSolver::setObj() {
     try {
         model->setObjective(obj, GRB_MINIMIZE);

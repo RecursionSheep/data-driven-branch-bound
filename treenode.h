@@ -5,6 +5,7 @@
 
 class Node {
 public:
+    static double parameter;
     std::vector<int> upper, lower;
     std::vector<std::vector<double>> score; // score[i][j]: the j-th score of the i-th integer variable
     std::vector<double> relaxedSol, roundingSol;
