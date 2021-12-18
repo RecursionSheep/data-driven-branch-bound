@@ -2,7 +2,7 @@
 
 using namespace std;
 
-const int N = 200;
+const int N = 100;
 const int MAXVALUE = 100000, MAXSIZE = 100000;
 
 int main(int argc, char **argv) {

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void branch_and_bound(MilpInstance *milp, char *logfile, double parameter) {
+void branch_and_bound(MilpInstance *milp, char *logfile, double parameter, int maxNode) {
     Node *root = new Node(milp);
     root->parameter = parameter;
     LPSolver *lpsolver = new LPSolver();
@@ -41,9 +41,10 @@ void branch_and_bound(MilpInstance *milp, char *logfile, double parameter) {
     Q.push(root);
     int iterCnt = 0;
     while (!Q.empty()) {
+        if (iterCnt > maxNode) break;
         iterCnt ++;
-        if (iterCnt % 20 == 0)
-            cout << "Visit " << iterCnt << " nodes" << endl;
+        /*if (iterCnt % 20 == 0)
+            cout << "Visit " << iterCnt << " nodes" << endl;*/
         Node *node = Q.top(); Q.pop();
         //cout << node->dualCost << endl;
         if (node->checkInt()) {
@@ -114,6 +115,7 @@ void branch_and_bound(MilpInstance *milp, char *logfile, double parameter) {
 // argv[1]: testcase file
 // argv[2]: output log file
 // argv[3]: tuned parameter
+// argv[4]: maximum nodes
 int main(int argc, char **argv) {
     ifstream in(argv[1]);
     MilpParser parser;
@@ -121,8 +123,9 @@ int main(int argc, char **argv) {
     in.close();
     
     double parameter = atof(argv[3]);
+    int maxNode = atoi(argv[4]);
     //cout << *milp;
-    branch_and_bound(milp, argv[2], parameter);
+    branch_and_bound(milp, argv[2], parameter, maxNode);
     delete milp;
     
     return 0;
